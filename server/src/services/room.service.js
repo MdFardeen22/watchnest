@@ -1,103 +1,138 @@
-const rooms = new Map();
-const userToRoom = new Map();
-const MAX_USERS_PER_ROOM = 4;
+import { Room } from '../models/Room.js';
+import { MAX_ROOM_PARTICIPANTS } from '../config/constants.js';
 
 function generateRoomCode() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let code;
+
   do {
     code = '';
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 6; i += 1) {
       code += chars[Math.floor(Math.random() * chars.length)];
     }
-  } while (rooms.has(code));
+  } while (false); // uniqueness enforced at save time
+
   return code;
 }
 
-function serializeRoom(room) {
-  const users = room.users.map((participant) => ({
+function serializeRoom(doc) {
+  if (!doc) {
+    return null;
+  }
+
+  const participants = (doc.participants ?? []).map((participant) => ({
     ...participant,
-    isHost: participant.id === room.hostId,
+    isHost: participant.socketId === doc.hostId,
   }));
 
   return {
-    roomCode: room.roomCode,
-    code: room.roomCode,
-    hostId: room.hostId,
-    hostName: room.hostName,
-    locked: room.locked,
-    maxUsers: room.maxUsers,
-    users,
-    participants: users,
-    videoUrl: room.videoUrl ?? null,
-    createdAt: room.createdAt,
+    roomCode: doc.roomCode,
+    code: doc.roomCode,
+    hostId: doc.hostId,
+    hostName: doc.hostName,
+    locked: doc.locked,
+    maxUsers: MAX_ROOM_PARTICIPANTS,
+    users: participants,
+    participants,
+    youtubeVideoId: doc.youtubeVideoId ?? null,
+    createdAt: doc.createdAt,
+    updatedAt: doc.updatedAt,
   };
 }
 
 export class RoomService {
-  static createRoom(hostId, hostName) {
+  static async createRoom(hostId, hostName, userId) {
     const roomCode = generateRoomCode();
-    const now = Date.now();
+
     const participant = {
-      id: hostId,
-      name: hostName,
+      socketId: hostId,
+      userId: userId ?? null,
+      userName: hostName,
+      isHost: true,
+      joinedAt: new Date(),
       micEnabled: false,
-      joinedAt: now,
     };
-    const room = {
+
+    const room = new Room({
       roomCode,
       hostId,
       hostName,
-      users: [participant],
+      participants: [participant],
+      youtubeVideoId: null,
       locked: false,
-      maxUsers: MAX_USERS_PER_ROOM,
-      createdAt: now,
-      videoUrl: null,
-    };
+    });
 
-    rooms.set(roomCode, room);
-    userToRoom.set(hostId, roomCode);
+    await room.save();
     return serializeRoom(room);
   }
 
-  static joinRoom(roomCode, userId, userName) {
+  static async joinRoom(roomCode, userId, userName, socketId) {
     const normalizedRoomCode = String(roomCode).trim().toUpperCase();
-    const room = rooms.get(normalizedRoomCode);
+    const room = await Room.findOne({ roomCode: normalizedRoomCode });
 
     if (!room) {
       throw new Error('Room not found');
     }
 
-    const existingParticipant = room.users.find((participant) => participant.id === userId);
+    const existingParticipant = userId
+      ? room.participants.find((participant) => participant.userId === userId)
+      : room.participants.find((participant) => participant.socketId === socketId);
 
     if (existingParticipant) {
-      existingParticipant.name = userName;
+      const previousSocketId = existingParticipant.socketId;
+      existingParticipant.socketId = socketId;
+      existingParticipant.userId = userId ?? existingParticipant.userId;
+      existingParticipant.userName = userName;
+
+      if (room.hostId === previousSocketId) {
+        room.hostId = socketId;
+      }
+
+      await room.save();
       return serializeRoom(room);
     }
 
-    if (room.users.length >= room.maxUsers) {
+    if (room.participants.length >= MAX_ROOM_PARTICIPANTS) {
       throw new Error('Room is full');
     }
 
-    room.users.push({
-      id: userId,
-      name: userName,
+    room.participants.push({
+      socketId,
+      userId: userId ?? null,
+      userName,
+      isHost: false,
+      joinedAt: new Date(),
       micEnabled: false,
-      joinedAt: Date.now(),
     });
-    userToRoom.set(userId, normalizedRoomCode);
 
+    await room.save();
     return serializeRoom(room);
   }
 
-  static getRoom(roomCode) {
-    const room = rooms.get(String(roomCode).trim().toUpperCase());
-    return room ? serializeRoom(room) : null;
+  static async getRoom(roomCode) {
+    const normalizedRoomCode = String(roomCode).trim().toUpperCase();
+    const room = await Room.findOne({ roomCode: normalizedRoomCode });
+    return serializeRoom(room);
   }
 
-  static loadVideo(roomCode, userId, videoUrl) {
+  static async verifyRoomHost(roomCode, userId) {
     const normalizedRoomCode = String(roomCode).trim().toUpperCase();
-    const room = rooms.get(normalizedRoomCode);
+    const room = await Room.findOne({ roomCode: normalizedRoomCode });
+
+    if (!room) {
+      throw new Error('Room not found');
+    }
+
+    if (room.hostId !== userId) {
+      throw new Error('Only the host can control playback');
+    }
+
+    return room;
+  }
+
+  static async loadVideo(roomCode, userId, youtubeVideoId) {
+    const normalizedRoomCode = String(roomCode).trim().toUpperCase();
+    const room = await Room.findOne({ roomCode: normalizedRoomCode });
 
     if (!room) {
       throw new Error('Room not found');
@@ -107,45 +142,51 @@ export class RoomService {
       throw new Error('Only the host can load video');
     }
 
-    room.videoUrl = videoUrl;
+    room.youtubeVideoId = youtubeVideoId;
+    await room.save();
+
     return serializeRoom(room);
   }
 
-  static leaveRoom(roomCode, userId) {
+  static async leaveRoom(roomCode, socketId) {
     const normalizedRoomCode = String(roomCode).trim().toUpperCase();
-    const room = rooms.get(normalizedRoomCode);
+    const room = await Room.findOne({ roomCode: normalizedRoomCode });
 
     if (!room) {
       return null;
     }
 
-    room.users = room.users.filter((participant) => participant.id !== userId);
-    userToRoom.delete(userId);
+    const leavingParticipant = room.participants.find((participant) => participant.socketId === socketId);
+    room.participants = room.participants.filter((participant) => participant.socketId !== socketId);
 
-    if (room.users.length === 0) {
-      rooms.delete(normalizedRoomCode);
+    if (room.participants.length === 0) {
+      await Room.deleteOne({ roomCode: normalizedRoomCode });
       return null;
     }
 
-    if (room.hostId === userId) {
-      const nextHost = room.users
+    if (room.hostId === socketId) {
+      const nextHost = room.participants
         .slice()
         .sort((a, b) => a.joinedAt - b.joinedAt)[0];
-      room.hostId = nextHost.id;
-      room.hostName = nextHost.name;
+      room.hostId = nextHost.socketId;
+      room.hostName = nextHost.userName;
     }
 
+    await room.save();
     return serializeRoom(room);
   }
 
-  static getRoomByUser(userId) {
-    const code = userToRoom.get(userId);
-    const room = code ? rooms.get(code) : null;
-
-    return room ? serializeRoom(room) : null;
+  static async clearSocketMapping() {
+    // No in-memory socket mapping is maintained with MongoDB.
   }
 
-  static getRoomCodeByUser(userId) {
-    return userToRoom.get(userId) ?? null;
+  static async getRoomByUser(userId) {
+    const room = await Room.findOne({ 'participants.userId': userId });
+    return serializeRoom(room);
+  }
+
+  static async getRoomCodeByUser(userId) {
+    const room = await Room.findOne({ 'participants.userId': userId });
+    return room?.roomCode ?? null;
   }
 }

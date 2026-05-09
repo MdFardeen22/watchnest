@@ -1,6 +1,7 @@
 const GOOGLE_DRIVE_FILE_ID_PATTERNS = [
   /\/file\/d\/([a-zA-Z0-9_-]{10,})/,
   /[?&]id=([a-zA-Z0-9_-]{10,})/,
+  /\/open\?id=([a-zA-Z0-9_-]{10,})/,
 ];
 
 function extractGoogleDriveFileId(value) {
@@ -26,6 +27,16 @@ function extractGoogleDriveFileId(value) {
 }
 
 export function parseGoogleDriveVideo(source) {
+  const fileId = extractGoogleDriveFileId(source);
+
+  if (!fileId) {
+    throw new Error('Invalid Google Drive video link');
+  }
+
+  return `https://drive.google.com/uc?export=download&id=${fileId}`;
+}
+
+export function parseGoogleDrivePreview(source) {
   const fileId = extractGoogleDriveFileId(source);
 
   if (!fileId) {

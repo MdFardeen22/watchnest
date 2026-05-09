@@ -3,6 +3,7 @@ import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 import { createApp } from './app.js';
 import { registerSockets } from './sockets/index.js';
+import { connectDatabase } from './config/db.js';
 
 const config = {
   port: Number(process.env.PORT ?? 4000),
@@ -18,7 +19,9 @@ export function createRealtimeServer(httpServer) {
   });
 }
 
-export function startServer() {
+export async function startServer() {
+  await connectDatabase();
+
   const app = createApp({ clientOrigin: config.clientOrigin });
   const httpServer = createServer(app);
   const io = createRealtimeServer(httpServer);
@@ -32,4 +35,7 @@ export function startServer() {
   return { app, httpServer, io };
 }
 
-startServer();
+startServer().catch((error) => {
+  console.error('Failed to start WatchNest server:', error);
+  process.exit(1);
+});

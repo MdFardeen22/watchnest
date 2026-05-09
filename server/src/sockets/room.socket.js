@@ -1,18 +1,20 @@
 import { RoomService } from '../services/room.service.js';
 import { VideoService } from '../services/video.service.js';
 import { validateCreateRoom, validateJoinRoom } from '../validators/room.validator.js';
-import { validateVideoPayload } from '../validators/video.validator.js';
+import { validateVideoPayload, validateVideoSync } from '../validators/video.validator.js';
 
 export function registerRoomSocket(io, socket) {
-  socket.on('create-room', (data, callback) => {
+  socket.on('create-room', async (data, callback) => {
     try {
       console.info(`[create-room received] socket=${socket.id}`);
       validateCreateRoom(data);
       const hostName = (data.hostName ?? data.userName ?? data.name).trim();
-      const room = RoomService.createRoom(socket.id, hostName);
+      const userId = data.userId ?? null;
+      const room = await RoomService.createRoom(socket.id, hostName, userId);
 
       socket.join(room.roomCode);
       socket.data.roomCode = room.roomCode;
+      socket.data.userId = userId;
       socket.emit('room-created', { room });
       io.to(room.roomCode).emit('room-updated', { room });
       console.info(`[room created] room=${room.roomCode} host=${socket.id}`);
@@ -32,15 +34,17 @@ export function registerRoomSocket(io, socket) {
     }
   });
 
-  socket.on('join-room', (data) => {
+  socket.on('join-room', async (data) => {
     try {
       validateJoinRoom(data);
       const roomCode = (data.roomCode ?? data.code).trim().toUpperCase();
+      const userId = data.userId ?? null;
       const userName = (data.userName ?? data.name).trim();
-      const room = RoomService.joinRoom(roomCode, socket.id, userName);
+      const room = await RoomService.joinRoom(roomCode, userId, userName, socket.id);
 
       socket.join(roomCode);
       socket.data.roomCode = roomCode;
+      socket.data.userId = userId;
       socket.emit('room-joined', { room });
       io.to(roomCode).emit('room-updated', { room });
       console.info(`[rooms] joined room=${roomCode} user=${socket.id}`);
@@ -49,7 +53,7 @@ export function registerRoomSocket(io, socket) {
     }
   });
 
-  socket.on('load-video', (data, callback) => {
+  socket.on('load-video', async (data, callback) => {
     try {
       validateVideoPayload(data);
       const roomCode = (data.roomCode ?? data.code ?? socket.data.roomCode)?.trim().toUpperCase();
@@ -58,7 +62,7 @@ export function registerRoomSocket(io, socket) {
         throw new Error('Room code missing');
       }
 
-      const room = VideoService.loadVideo(roomCode, socket.id, data.videoUrl);
+      const room = await VideoService.loadVideo(roomCode, socket.id, data.videoUrl);
       io.to(roomCode).emit('room-updated', { room });
       sendAck(callback, { success: true, room });
     } catch (error) {
@@ -67,12 +71,62 @@ export function registerRoomSocket(io, socket) {
     }
   });
 
-  socket.on('leave-room', (data) => {
+  socket.on('video-play', (data) => {
+    try {
+      const roomCode = (data.roomCode ?? data.code ?? socket.data.roomCode)?.trim().toUpperCase();
+      if (!roomCode) {
+        throw new Error('Room code missing');
+      }
+
+      RoomService.verifyRoomHost(roomCode, socket.id);
+      socket.to(roomCode).emit('video-play');
+    } catch (error) {
+      socket.emit('error', { message: error.message });
+    }
+  });
+
+  socket.on('video-pause', (data) => {
+    try {
+      const roomCode = (data.roomCode ?? data.code ?? socket.data.roomCode)?.trim().toUpperCase();
+      if (!roomCode) {
+        throw new Error('Room code missing');
+      }
+
+      RoomService.verifyRoomHost(roomCode, socket.id);
+      socket.to(roomCode).emit('video-pause');
+    } catch (error) {
+      socket.emit('error', { message: error.message });
+    }
+  });
+
+  socket.on('video-sync', async (data) => {
+    try {
+      validateVideoSync(data);
+      const roomCode = (data.roomCode ?? data.code ?? socket.data.roomCode)?.trim().toUpperCase();
+      if (!roomCode) {
+        throw new Error('Room code missing');
+      }
+
+      await RoomService.verifyRoomHost(roomCode, socket.id);
+
+      socket.to(roomCode).emit('video-sync', {
+        roomCode,
+        action: data.action,
+        currentTime: Number(data.currentTime),
+        playbackRate: Number(data.playbackRate),
+        paused: Boolean(data.paused),
+      });
+    } catch (error) {
+      socket.emit('error', { message: error.message });
+    }
+  });
+
+  socket.on('leave-room', async (data) => {
     try {
       const code = data?.roomCode ?? data?.code ?? socket.data.roomCode;
 
       if (code) {
-        const room = RoomService.leaveRoom(code, socket.id);
+        const room = await RoomService.leaveRoom(code, socket.id);
         socket.leave(code);
         socket.data.roomCode = null;
         io.to(code).emit('room-updated', { room });
@@ -87,16 +141,8 @@ export function registerRoomSocket(io, socket) {
   });
 
   socket.on('disconnect', () => {
-    const code = RoomService.getRoomCodeByUser(socket.id);
-
-    if (code) {
-      const room = RoomService.leaveRoom(code, socket.id);
-      socket.to(code).emit('room-updated', { room });
-
-      if (!room) {
-        console.info(`[rooms] deleted room=${code}`);
-      }
-    }
+    RoomService.clearSocketMapping(socket.id);
+    console.info(`[socket disconnected] socket=${socket.id} room=${socket.data.roomCode}`);
   });
 }
 
