@@ -13,12 +13,12 @@ export default function VoicePanel({ participants }) {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="mb-6 px-1 flex flex-col justify-between items-start">
+      <div className="mb-3 md:mb-6 px-1 flex flex-col justify-between items-start">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-500 transition-colors">
             Voice
           </p>
-          <h2 className="mt-1 text-xl font-bold tracking-tight text-slate-900 dark:text-white drop-shadow-sm transition-colors">
+          <h2 className="mt-0.5 md:mt-1 text-base md:text-xl font-bold tracking-tight text-slate-900 dark:text-white drop-shadow-sm transition-colors">
             Voice Controls
           </h2>
         </div>
@@ -39,17 +39,17 @@ export default function VoicePanel({ participants }) {
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/40 p-6 text-center shadow-inner transition-colors min-h-[200px]">
+      <div className="flex flex-1 flex-col items-center justify-center rounded-xl md:rounded-2xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/40 p-4 md:p-6 text-center shadow-inner transition-colors min-h-[140px] md:min-h-[200px]">
         {micStatus === 'Permission Denied' ? (
           <div className="flex flex-col items-center">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z"></path></svg>
             </div>
-            <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Please allow microphone access in your browser.</p>
+            <p className="text-xs md:text-sm font-medium text-slate-600 dark:text-slate-400">Please allow microphone access in your browser.</p>
           </div>
         ) : (
           <>
-            <div className="relative mb-5 flex items-center justify-center">
+            <div className="relative mb-3 md:mb-5 flex items-center justify-center">
               {/* Local Speaking Indicator */}
               {speakingPeers['local'] && !muted && (
                  <div className="absolute inset-0 rounded-full bg-emerald-500/20 dark:bg-emerald-400/20 scale-[2.5] animate-pulse"></div>
@@ -64,14 +64,14 @@ export default function VoicePanel({ participants }) {
               </div>
             </div>
             
-            <p className="text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors">
+            <p className="text-xs md:text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors">
               {muted ? 'Your microphone is currently muted' : 'Your microphone is active'}
             </p>
             <button
               type="button"
               onClick={toggleMute}
               disabled={micStatus !== 'Connected'}
-              className={`mt-6 flex h-12 items-center justify-center rounded-xl px-8 font-bold transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`mt-4 md:mt-6 flex h-10 md:h-12 items-center justify-center rounded-lg md:rounded-xl px-5 md:px-8 text-xs md:text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${
                 muted 
                   ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 hover:bg-slate-800 dark:hover:bg-slate-200' 
                   : 'bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white'

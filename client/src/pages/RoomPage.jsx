@@ -508,37 +508,37 @@ export default function RoomPage() {
         <div className="pointer-events-none fixed left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-indigo-500/5 dark:bg-indigo-500/10 blur-[120px] rounded-full z-0 transition-colors duration-500"></div>
         <div className="pointer-events-none fixed right-0 bottom-0 translate-x-1/3 translate-y-1/3 w-[600px] h-[500px] bg-purple-500/5 dark:bg-purple-500/10 blur-[120px] rounded-full z-0 transition-colors duration-500"></div>
 
-        <header className="relative z-20 flex-none h-16 border-b border-slate-200 dark:border-white/10 bg-white/80 dark:bg-[#08090d]/80 backdrop-blur-xl transition-colors duration-300 flex items-center justify-between px-4 lg:px-6">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="WatchNest" className="h-12 w-auto drop-shadow-sm dark:drop-shadow-md transition-all" />
+        <header className="relative z-20 flex-none h-14 md:h-16 border-b border-slate-200 dark:border-white/10 bg-white/80 dark:bg-[#08090d]/80 backdrop-blur-xl transition-colors duration-300 flex items-center justify-between px-3 md:px-4 lg:px-6">
+          <div className="flex items-center gap-2 md:gap-3 min-w-0">
+            <img src={logo} alt="WatchNest" className="h-8 md:h-12 w-auto shrink-0 drop-shadow-sm dark:drop-shadow-md transition-all" />
             <button
               onClick={handleCopyCode}
               title="Copy Room Code"
-              className="rounded-full bg-slate-100 dark:bg-white/10 px-3 py-1 text-xs font-bold tracking-wider text-slate-600 dark:text-slate-300 backdrop-blur-md shadow-sm border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-200 dark:hover:bg-white/20 active:scale-95"
+              className="shrink-0 rounded-full bg-slate-100 dark:bg-white/10 px-2.5 md:px-3 py-1 text-[10px] md:text-xs font-bold tracking-wider text-slate-600 dark:text-slate-300 backdrop-blur-md shadow-sm border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-200 dark:hover:bg-white/20 active:scale-95"
             >
               ROOM {room.roomCode.toUpperCase()}
             </button>
-            <span className="hidden sm:inline-block ml-2 rounded-full bg-indigo-50 dark:bg-indigo-500/10 px-3 py-1 text-xs font-bold tracking-wider text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20">
+            <span className="hidden sm:inline-block shrink-0 rounded-full bg-indigo-50 dark:bg-indigo-500/10 px-3 py-1 text-xs font-bold tracking-wider text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20">
               {participants.length}/{room.maxUsers ?? 4} PEERS
             </span>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 shrink-0">
             <button
               onClick={handleCopyLink}
-              className="hidden sm:flex h-9 items-center justify-center rounded-full bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 px-4 text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm transition-all hover:bg-slate-50 dark:hover:bg-white/10 active:scale-95"
+              className="hidden md:flex h-9 items-center justify-center rounded-full bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 px-4 text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm transition-all hover:bg-slate-50 dark:hover:bg-white/10 active:scale-95"
             >
               🔗 Copy Link
             </button>
             <button
               onClick={handleShare}
-              className="flex h-9 items-center justify-center rounded-full bg-indigo-600 px-4 text-xs font-semibold text-white shadow-sm transition-all hover:bg-indigo-500 active:scale-95"
+              className="flex h-8 md:h-9 items-center justify-center rounded-full bg-indigo-600 px-3 md:px-4 text-[10px] md:text-xs font-semibold text-white shadow-sm transition-all hover:bg-indigo-500 active:scale-95"
             >
-              📤 Share
+              📤 <span className="hidden sm:inline ml-1">Share</span>
             </button>
             <button
               onClick={toggleTheme}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 shadow-sm transition-all hover:scale-105 active:scale-95"
+              className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-full bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 shadow-sm transition-all hover:scale-105 active:scale-95 text-sm md:text-base"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? '☀️' : '🌙'}
@@ -546,18 +546,18 @@ export default function RoomPage() {
             <button
               type="button"
               onClick={() => setShowLeavePopup(true)}
-              className="flex h-9 items-center justify-center rounded-full bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 px-4 text-xs font-bold text-red-600 dark:text-red-400 transition-all hover:bg-red-500 hover:text-white hover:border-red-500 active:scale-95 shadow-sm ml-1"
+              className="flex h-8 md:h-9 items-center justify-center rounded-full bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 px-3 md:px-4 text-[10px] md:text-xs font-bold text-red-600 dark:text-red-400 transition-all hover:bg-red-500 hover:text-white hover:border-red-500 active:scale-95 shadow-sm"
             >
               Leave
             </button>
           </div>
         </header>
 
-        <div className="relative z-10 flex-1 flex flex-col lg:flex-row overflow-hidden">
+        <div className="relative z-10 flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
           
           {/* Main Video Area (Left 75%) */}
-          <section className="flex-1 lg:w-[75%] xl:w-[80%] flex flex-col p-3 lg:p-6 overflow-y-auto lg:overflow-hidden relative">
-            <div className="relative flex-1 rounded-2xl border border-slate-200 dark:border-white/10 bg-black overflow-hidden shadow-2xl transition-all duration-500 flex flex-col group">
+          <section className="shrink-0 lg:shrink lg:flex-1 lg:w-[75%] xl:w-[80%] flex flex-col p-2 md:p-3 lg:p-6 overflow-hidden relative">
+            <div className="relative w-full aspect-video lg:aspect-auto lg:flex-1 rounded-xl md:rounded-2xl border border-slate-200 dark:border-white/10 bg-black overflow-hidden shadow-2xl transition-all duration-500 flex flex-col group">
               {room.youtubeVideoId ? (
                 <>
                   <div
@@ -566,34 +566,34 @@ export default function RoomPage() {
                   />
                   {videoLoading ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-slate-50/80 dark:bg-[#08090d]/80 backdrop-blur-sm z-10">
-                      <span className="inline-flex h-12 w-12 animate-spin rounded-full border-4 border-indigo-200 dark:border-white/20 border-t-indigo-600 dark:border-t-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
+                      <span className="inline-flex h-10 w-10 md:h-12 md:w-12 animate-spin rounded-full border-4 border-indigo-200 dark:border-white/20 border-t-indigo-600 dark:border-t-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
                     </div>
                   ) : null}
                   
                   {/* Elegant overlay controls */}
-                  <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20 flex items-start justify-between p-4">
-                    <span className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-bold tracking-widest text-white backdrop-blur-md shadow-lg border border-white/10 uppercase flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                  <div className="absolute inset-x-0 top-0 h-16 md:h-24 bg-gradient-to-b from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20 flex items-start justify-between p-2 md:p-4">
+                    <span className="rounded-full bg-black/50 px-2 md:px-3 py-1 md:py-1.5 text-[10px] md:text-xs font-bold tracking-widest text-white backdrop-blur-md shadow-lg border border-white/10 uppercase flex items-center gap-1.5 md:gap-2">
+                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                       Synced
                     </span>
                     <button
                       onClick={handleFullscreen}
-                      className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-black/50 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-black/80 hover:scale-105 active:scale-95"
+                      className="pointer-events-auto flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-black/50 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-black/80 hover:scale-105 active:scale-95"
                     >
-                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                       <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                     </button>
                   </div>
                 </>
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center px-6 text-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-[#0a0a0f] transition-colors duration-300">
+                <div className="absolute inset-0 flex items-center justify-center px-4 md:px-6 text-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-[#0a0a0f] transition-colors duration-300">
                   <div>
-                    <div className="mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full bg-slate-200 dark:bg-white/5 shadow-inner">
-                      <span className="text-4xl">🍿</span>
+                    <div className="mb-3 md:mb-4 inline-flex h-14 w-14 md:h-20 md:w-20 items-center justify-center rounded-full bg-slate-200 dark:bg-white/5 shadow-inner">
+                      <span className="text-2xl md:text-4xl">🍿</span>
                     </div>
-                    <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white drop-shadow-sm transition-colors">
+                    <h2 className="text-lg md:text-2xl font-bold tracking-tight text-slate-900 dark:text-white drop-shadow-sm transition-colors">
                       No video loaded yet
                     </h2>
-                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 transition-colors max-w-sm mx-auto">
+                    <p className="mt-1 md:mt-2 text-xs md:text-sm text-slate-600 dark:text-slate-400 transition-colors max-w-sm mx-auto">
                       Waiting for the host to start a video. Grab your popcorn!
                     </p>
                   </div>
@@ -602,34 +602,35 @@ export default function RoomPage() {
             </div>
 
             {/* Video Input Form */}
-            <form className="mt-4 flex shrink-0 gap-3" onSubmit={handleLoadVideo}>
+            <form className="mt-2 md:mt-4 flex shrink-0 gap-2 md:gap-3" onSubmit={handleLoadVideo}>
               <input
                 type="url"
                 value={youtubeUrl}
                 onChange={(event) => setYoutubeUrl(event.target.value)}
                 disabled={!isHost}
-                placeholder={isHost ? 'Paste YouTube video link here...' : 'Only the host can load a video'}
-                className="h-12 w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-black/40 px-4 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all focus:border-indigo-500 dark:focus:border-indigo-500/50 focus:bg-white dark:focus:bg-black/60 focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50 inset-shadow-sm backdrop-blur-md shadow-sm"
+                placeholder={isHost ? 'Paste YouTube link...' : 'Only host can load video'}
+                className="h-10 md:h-12 w-full min-w-0 rounded-lg md:rounded-xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-black/40 px-3 md:px-4 text-xs md:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all focus:border-indigo-500 dark:focus:border-indigo-500/50 focus:bg-white dark:focus:bg-black/60 focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50 inset-shadow-sm backdrop-blur-md shadow-sm"
               />
               <button
                 type="submit"
                 disabled={!isHost}
-                className="flex h-12 shrink-0 items-center justify-center rounded-xl bg-indigo-600 px-6 font-bold text-white transition-all hover:bg-indigo-500 hover:scale-[1.02] active:scale-[0.98] focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#08090d] disabled:opacity-50 disabled:hover:bg-indigo-600 disabled:scale-100 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(79,70,229,0.3)]"
+                className="flex h-10 md:h-12 shrink-0 items-center justify-center rounded-lg md:rounded-xl bg-indigo-600 px-4 md:px-6 text-xs md:text-sm font-bold text-white transition-all hover:bg-indigo-500 hover:scale-[1.02] active:scale-[0.98] focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#08090d] disabled:opacity-50 disabled:hover:bg-indigo-600 disabled:scale-100 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(79,70,229,0.3)]"
               >
-                Load Video
+                Load
               </button>
             </form>
-            {error ? <p className="mt-2 text-sm font-medium text-red-500 dark:text-red-400 pl-1">{error}</p> : null}
+            {error ? <p className="mt-1 md:mt-2 text-xs md:text-sm font-medium text-red-500 dark:text-red-400 pl-1">{error}</p> : null}
           </section>
 
           {/* Sidebar Area (Right 25%) */}
-          <aside className="w-full lg:w-[25%] xl:w-[20%] lg:min-w-[320px] shrink-0 border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-white/10 bg-white/40 dark:bg-black/20 backdrop-blur-md flex flex-col z-20">
-            <div className="flex shrink-0 border-b border-slate-200 dark:border-white/10 p-2 gap-1">
+          <aside className="flex-1 lg:flex-none w-full lg:w-[25%] xl:w-[20%] lg:min-w-[320px] min-h-0 border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-white/10 bg-white/40 dark:bg-black/20 backdrop-blur-md flex flex-col z-20 overflow-hidden">
+            {/* Sticky Tab Bar */}
+            <div className="flex shrink-0 border-b border-slate-200 dark:border-white/10 p-1.5 md:p-2 gap-0.5 md:gap-1 sticky top-0 z-30 bg-white/60 dark:bg-[#08090d]/60 backdrop-blur-lg">
               {['chat', 'people', 'voice'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`flex-1 rounded-lg py-2.5 text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${
+                  className={`w-1/3 rounded-lg py-2 md:py-2.5 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-center transition-all duration-300 ${
                     activeTab === tab 
                       ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 shadow-sm' 
                       : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-700 dark:hover:text-slate-200'
@@ -640,14 +641,14 @@ export default function RoomPage() {
               ))}
             </div>
 
-            <div className="flex-1 overflow-hidden relative">
-              <div className={`absolute inset-0 p-4 transition-all duration-300 transform ${activeTab === 'chat' ? 'opacity-100 translate-x-0 z-10' : 'opacity-0 translate-x-8 -z-10 pointer-events-none'}`}>
+            <div className="flex-1 overflow-hidden relative min-h-0">
+              <div className={`absolute inset-0 p-2 md:p-4 transition-all duration-300 transform ${activeTab === 'chat' ? 'opacity-100 translate-x-0 z-10' : 'opacity-0 translate-x-8 -z-10 pointer-events-none'}`}>
                  <ChatPanel messages={messages} onSendMessage={handleSendMessage} />
               </div>
-              <div className={`absolute inset-0 p-4 transition-all duration-300 transform ${activeTab === 'people' ? 'opacity-100 translate-x-0 z-10' : 'opacity-0 translate-x-8 -z-10 pointer-events-none'}`}>
+              <div className={`absolute inset-0 p-2 md:p-4 transition-all duration-300 transform ${activeTab === 'people' ? 'opacity-100 translate-x-0 z-10' : 'opacity-0 translate-x-8 -z-10 pointer-events-none'}`}>
                  <PeoplePanel participants={participants} />
               </div>
-              <div className={`absolute inset-0 p-4 transition-all duration-300 transform ${activeTab === 'voice' ? 'opacity-100 translate-x-0 z-10' : 'opacity-0 translate-x-8 -z-10 pointer-events-none'}`}>
+              <div className={`absolute inset-0 p-2 md:p-4 transition-all duration-300 transform ${activeTab === 'voice' ? 'opacity-100 translate-x-0 z-10' : 'opacity-0 translate-x-8 -z-10 pointer-events-none'}`}>
                  <VoicePanel participants={participants} />
               </div>
             </div>

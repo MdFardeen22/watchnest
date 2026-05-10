@@ -12,14 +12,14 @@ export default function PeoplePanel({ participants }) {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="mb-4 shrink-0 px-1">
-        <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white drop-shadow-sm transition-colors">Participants</h2>
-        <p className="mt-1 text-xs font-medium text-slate-500 transition-colors">
+      <div className="mb-2 md:mb-4 shrink-0 px-1">
+        <h2 className="text-base md:text-lg font-bold tracking-tight text-slate-900 dark:text-white drop-shadow-sm transition-colors">Participants</h2>
+        <p className="mt-0.5 md:mt-1 text-[10px] md:text-xs font-medium text-slate-500 transition-colors">
           {participants.length} online
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar px-1 space-y-3 pb-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar px-1 space-y-2 md:space-y-3 pb-4 min-h-0">
         {participants.map((participant) => {
           const isMe = participant.id === socket?.id;
           const isSpeaking = isMe ? speakingPeers['local'] : speakingPeers[participant.id];
@@ -28,19 +28,19 @@ export default function PeoplePanel({ participants }) {
           return (
             <div
               key={participant.id}
-              className={`group flex items-center justify-between rounded-2xl border p-3 transition-all duration-300 ${
+              className={`group flex items-center justify-between rounded-xl md:rounded-2xl border p-2 md:p-3 transition-all duration-300 ${
                 isSpeaking && !isMuted
                   ? 'border-indigo-500/30 bg-indigo-50/50 dark:bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.15)]'
                   : 'border-slate-200/60 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] hover:bg-slate-100/50 dark:hover:bg-white/[0.04]'
               }`}
             >
-              <div className="flex items-center gap-3 overflow-hidden">
+              <div className="flex items-center gap-2 md:gap-3 overflow-hidden min-w-0">
                 <div className="relative shrink-0">
                   {/* Avatar with Glow if speaking */}
                   {isSpeaking && !isMuted && (
                     <div className="absolute inset-0 rounded-full bg-indigo-500/40 blur-md animate-pulse"></div>
                   )}
-                  <div className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm transition-all duration-300 ${isSpeaking && !isMuted ? 'bg-indigo-500 scale-105' : 'bg-slate-400 dark:bg-slate-700'}`}>
+                  <div className={`relative z-10 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full text-[10px] md:text-xs font-bold text-white shadow-sm transition-all duration-300 ${isSpeaking && !isMuted ? 'bg-indigo-500 scale-105' : 'bg-slate-400 dark:bg-slate-700'}`}>
                     {getInitials(participant.name)}
                   </div>
                   
@@ -54,8 +54,8 @@ export default function PeoplePanel({ participants }) {
                   </div>
                 </div>
 
-                <div className="flex flex-col truncate">
-                  <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100 transition-colors">
+                <div className="flex flex-col truncate min-w-0">
+                  <span className="truncate text-xs md:text-sm font-semibold text-slate-900 dark:text-slate-100 transition-colors">
                     {participant.name} {isMe && <span className="text-slate-400 dark:text-slate-500 font-normal">(you)</span>}
                   </span>
                   {participant.isHost ? (
