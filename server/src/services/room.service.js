@@ -35,6 +35,8 @@ function serializeRoom(doc) {
     users: participants,
     participants,
     youtubeVideoId: doc.youtubeVideoId ?? null,
+    videoState: doc.videoState,
+    chatMessages: doc.chatMessages ?? [],
     createdAt: doc.createdAt,
     updatedAt: doc.updatedAt,
   };
@@ -174,6 +176,45 @@ export class RoomService {
 
     await room.save();
     return serializeRoom(room);
+  }
+
+  static async saveChatMessage(roomCode, socketId, messageText) {
+    const normalizedRoomCode = String(roomCode).trim().toUpperCase();
+    const room = await Room.findOne({ roomCode: normalizedRoomCode });
+
+    if (!room) {
+      throw new Error('Room not found');
+    }
+
+    const participant = room.participants.find((p) => p.socketId === socketId);
+    if (!participant) {
+      throw new Error('You are not a participant in this room');
+    }
+
+    if (!messageText || messageText.trim().length === 0) {
+      throw new Error('Message cannot be empty');
+    }
+    
+    if (messageText.length > 300) {
+      throw new Error('Message is too long');
+    }
+
+    const newMessage = {
+      sender: participant.userName,
+      message: messageText.trim(),
+      isHost: participant.isHost,
+      createdAt: new Date(),
+    };
+
+    room.chatMessages.push(newMessage);
+    
+    // Limit chat history to prevent overly large documents
+    if (room.chatMessages.length > 100) {
+      room.chatMessages = room.chatMessages.slice(-100);
+    }
+
+    await room.save();
+    return newMessage;
   }
 
   static async clearSocketMapping() {

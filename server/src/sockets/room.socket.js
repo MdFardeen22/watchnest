@@ -107,7 +107,11 @@ export function registerRoomSocket(io, socket) {
         throw new Error('Room code missing');
       }
 
-      await RoomService.verifyRoomHost(roomCode, socket.id);
+      await VideoService.updateSyncState(roomCode, socket.id, {
+        currentTime: data.currentTime,
+        playbackRate: data.playbackRate,
+        paused: data.paused,
+      });
 
       socket.to(roomCode).emit('video-sync', {
         roomCode,
@@ -116,6 +120,22 @@ export function registerRoomSocket(io, socket) {
         playbackRate: Number(data.playbackRate),
         paused: Boolean(data.paused),
       });
+    } catch (error) {
+      socket.emit('error', { message: error.message });
+    }
+  });
+
+  socket.on('send-message', async (data) => {
+    try {
+      const roomCode = (data.roomCode ?? data.code ?? socket.data.roomCode)?.trim().toUpperCase();
+      if (!roomCode) {
+        throw new Error('Room code missing');
+      }
+
+      const messageText = data.message;
+      const savedMessage = await RoomService.saveChatMessage(roomCode, socket.id, messageText);
+
+      io.to(roomCode).emit('new-message', { message: savedMessage });
     } catch (error) {
       socket.emit('error', { message: error.message });
     }

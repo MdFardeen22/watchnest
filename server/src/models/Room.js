@@ -17,8 +17,19 @@ const participantSchema = new Schema(
 const chatMessageSchema = new Schema(
   {
     sender: { type: String, required: true, trim: true, maxlength: 32 },
-    message: { type: String, required: true, trim: true, maxlength: 1024 },
+    message: { type: String, required: true, trim: true, maxlength: 300 },
+    isHost: { type: Boolean, default: false },
     createdAt: { type: Date, required: true, default: () => new Date() },
+  },
+  { _id: false }
+);
+
+const videoStateSchema = new Schema(
+  {
+    currentTime: { type: Number, default: 0 },
+    playbackRate: { type: Number, default: 1 },
+    paused: { type: Boolean, default: true },
+    lastSyncAt: { type: Date, default: () => new Date() },
   },
   { _id: false }
 );
@@ -38,6 +49,7 @@ const roomSchema = new Schema(
     hostName: { type: String, required: true, trim: true, maxlength: 32 },
     participants: { type: [participantSchema], default: [] },
     youtubeVideoId: { type: String, default: null, trim: true, maxlength: 11 },
+    videoState: { type: videoStateSchema, default: () => ({}) },
     chatMessages: { type: [chatMessageSchema], default: [] },
     locked: { type: Boolean, default: false },
   },
