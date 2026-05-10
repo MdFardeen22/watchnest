@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSocket } from '../contexts/socket.context.jsx';
 import { useTheme } from '../contexts/theme.context.jsx';
+import logo from '../assets/logo.png';
 
 const WATCHNEST_NAME_KEY = 'watchnest.displayName';
 const WATCHNEST_ROOM_KEY = 'watchnest.currentRoom';
@@ -78,8 +79,11 @@ export default function JoinPage() {
     return (
       <main className="min-h-screen bg-slate-50 text-slate-900 dark:bg-[#08090d] dark:text-white flex items-center justify-center px-5 transition-colors duration-300">
         <div className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-black/50 px-8 py-7 text-center shadow-2xl shadow-black/5 dark:shadow-black/30 backdrop-blur-md">
+          <div className="flex justify-center mb-6">
+            <img src={logo} alt="WatchNest" className="h-14 w-auto opacity-80" />
+          </div>
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
-            Connecting to WatchNest
+            Connecting...
           </p>
           <div className="mt-4 flex justify-center">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900 dark:border-white/20 dark:border-t-white"></div>
@@ -104,6 +108,9 @@ export default function JoinPage() {
 
       <section className="relative z-10 w-full max-w-md">
         <div className="mb-8 text-center">
+          <div className="flex justify-center mb-6">
+            <img src={logo} alt="WatchNest" className="h-20 w-auto drop-shadow-sm dark:drop-shadow-lg transition-all" />
+          </div>
           <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-3 drop-shadow-sm transition-colors">
             You've been invited!
           </h1>

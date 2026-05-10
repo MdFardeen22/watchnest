@@ -12,8 +12,8 @@ export default function VoicePanel({ participants }) {
   const connectedSocketIds = Object.keys(speakingPeers);
 
   return (
-    <section className="relative rounded-2xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/[0.02] p-5 sm:p-6 shadow-xl dark:shadow-2xl backdrop-blur-xl transition-all duration-500">
-      <div className="mb-6 text-center sm:text-left flex flex-col sm:flex-row justify-between items-start sm:items-center">
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="mb-6 px-1 flex flex-col justify-between items-start">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-500 transition-colors">
             Voice
@@ -39,7 +39,7 @@ export default function VoicePanel({ participants }) {
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/40 p-6 text-center shadow-inner transition-colors min-h-[200px]">
+      <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/40 p-6 text-center shadow-inner transition-colors min-h-[200px]">
         {micStatus === 'Permission Denied' ? (
           <div className="flex flex-col items-center">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400">
@@ -82,25 +82,6 @@ export default function VoicePanel({ participants }) {
           </>
         )}
       </div>
-
-      <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/10">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Voice Participants</h3>
-        <div className="flex flex-wrap gap-2">
-          {participants.filter(p => connectedSocketIds.includes(p.id) || p.id === socket?.id).map(p => {
-             const isSpeaking = p.id === socket?.id ? speakingPeers['local'] : speakingPeers[p.id];
-             const isMuted = p.id === socket?.id ? muted : false; // We don't broadcast mute state right now, but we could. For now, rely on speaking.
-
-             return (
-              <div key={p.id} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${isSpeaking && !isMuted ? 'border-emerald-500/50 bg-emerald-50 dark:bg-emerald-500/10 shadow-[0_0_10px_rgba(52,211,153,0.2)]' : 'border-slate-200 dark:border-white/10 bg-white dark:bg-black/20'}`}>
-                 <span className={`h-2 w-2 rounded-full transition-colors ${isSpeaking && !isMuted ? 'bg-emerald-500 shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-slate-300 dark:bg-slate-600'}`}></span>
-                 <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-                    {p.name} {p.id === socket?.id && '(you)'}
-                 </span>
-              </div>
-             )
-          })}
-        </div>
-      </div>
-    </section>
+    </div>
   );
 }

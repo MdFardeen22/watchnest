@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../contexts/socket.context.jsx';
 import { useTheme } from '../contexts/theme.context.jsx';
+import logo from '../assets/logo.png';
 
 const WATCHNEST_NAME_KEY = 'watchnest.displayName';
 const WATCHNEST_ROOM_KEY = 'watchnest.currentRoom';
@@ -148,14 +149,9 @@ export default function HomePage() {
 
       <section className="relative z-10 w-full max-w-md">
         <div className="mb-8 text-center animate-enter">
-          <div className="mb-6 flex justify-center">
-            <span className="inline-flex items-center rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-slate-300 backdrop-blur-md shadow-sm dark:shadow-lg transition-colors">
-              Private watch party rooms
-            </span>
-          </div>
-
-          <h1 className="text-5xl font-bold tracking-tight sm:text-6xl text-slate-900 dark:text-white mb-5 drop-shadow-sm dark:drop-shadow-xl transition-colors">
-            WatchNest
+          
+          <h1 className="flex justify-center -mb-6">
+            <img src={logo} alt="WatchNest" className="h-[280px] object-contain drop-shadow-sm dark:drop-shadow-xl transition-all" />
           </h1>
 
           <p className="mx-auto max-w-sm text-base leading-relaxed text-slate-600 dark:text-slate-400 transition-colors">
