@@ -1,11 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { io } from 'socket.io-client';
-
-const SOCKET_URL = 'http://localhost:4000';
-const socket = io(SOCKET_URL, {
-  transports: ['websocket', 'polling'],
-  autoConnect: true,
-});
+import { socket, API_URL } from '../config/api.js';
 
 const SocketContext = createContext(undefined);
 
@@ -15,7 +9,7 @@ export function SocketProvider({ children }) {
   useEffect(() => {
     function handleConnect() {
       setConnected(true);
-      console.info('[socket connected]', { id: socket.id, url: SOCKET_URL });
+      console.info('[socket connected]', { id: socket.id, url: API_URL });
     }
 
     function handleConnectError(error) {
