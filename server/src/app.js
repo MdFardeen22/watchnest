@@ -9,9 +9,10 @@ export function createApp({ clientOrigin = process.env.CLIENT_ORIGIN ?? DEFAULT_
   app.disable('x-powered-by');
 
   app.use(cors({
-    origin: clientOrigin,
+    origin: true,
     credentials: true,
   }));
+  console.log('cors enabled');
 
   app.use(express.json({ limit: '32kb' }));
 

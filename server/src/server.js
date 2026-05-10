@@ -13,7 +13,7 @@ const config = {
 export function createRealtimeServer(httpServer) {
   return new Server(httpServer, {
     cors: {
-      origin: config.clientOrigin,
+      origin: true,
       credentials: true,
     },
   });
@@ -29,6 +29,7 @@ export async function startServer() {
   registerSockets(io);
 
   httpServer.listen(config.port, () => {
+    console.log('server started');
     console.log(`WatchNest server listening on port ${config.port}`);
   });
 
